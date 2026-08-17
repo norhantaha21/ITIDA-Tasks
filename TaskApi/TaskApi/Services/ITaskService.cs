@@ -4,6 +4,7 @@ namespace TaskApi.Services
 {
     public interface ITaskService
     {
-        public IEnumerable<Tasks> GetTasks();
+        public Tasks CreateTask(Tasks task);
+        public PagedResult<Tasks> GetTasks(TaskFilter param);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskApi.Models;
 using TaskApi.Services;
 
 namespace TaskApi.Controllers.v2
@@ -15,19 +16,16 @@ namespace TaskApi.Controllers.v2
             _taskService = taskService;
         }
 
-        [HttpGet]
-        public IActionResult GetAllTasks()
+        [HttpPost]
+        public ActionResult CreateTask(Tasks task)
         {
-            var tasks = _taskService.GetTasks();
-            var result = tasks.Select(t => new
-            {
-                t.Id,
-                t.Title,
-                t.Status,
-                t.DueDate,
-                t.CreatedAt
-            });
-            return Ok(result);
+            return Ok(_taskService.CreateTask(task));
+        }
+
+        [HttpGet]
+        public IActionResult GetAllTasks([FromQuery] TaskFilter param)
+        {
+            return Ok(_taskService.GetTasks(param));
         }
     }
 }

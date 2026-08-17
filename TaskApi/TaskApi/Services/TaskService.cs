@@ -13,9 +13,14 @@ namespace TaskApi.Services
             _taskRepository = taskRepository;
         }
 
-        public IEnumerable<Tasks> GetTasks()
+        public Tasks CreateTask(Tasks task)
         {
-            return _taskRepository.GetTasks();
+            return _taskRepository.CreateTask(task);
+        }
+
+        public PagedResult<Tasks> GetTasks(TaskFilter param)
+        {
+            return _taskRepository.GetTasks(param);
         }
     }
 }
