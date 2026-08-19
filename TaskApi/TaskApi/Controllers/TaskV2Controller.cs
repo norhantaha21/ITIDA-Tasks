@@ -27,5 +27,21 @@ namespace TaskApi.Controllers.v2
         {
             return Ok(_taskService.GetTasks(param));
         }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult> GetTaskById(int id)
+        {
+            var data = await _taskService.GetById(id);
+            return Ok(new
+            {
+                Id = data.Id,
+                Title = data.Title,
+                Description = data.Description,
+                UserId = data.UserId,
+                Name = data.User.Name
+
+            });
+        }
     }
 }

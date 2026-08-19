@@ -4,7 +4,9 @@ namespace TaskApi.Repositories
 {
     public interface ITaskRepository
     {
-        public Tasks CreateTask(Tasks task);
+        public Task<Tasks> CreateTask(Tasks task);
         public PagedResult<Tasks> GetTasks(TaskFilter param);
+
+        public Task<Tasks> GetById(int id);
     }
 }

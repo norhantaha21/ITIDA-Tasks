@@ -1,23 +1,38 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.VisualBasic;
 using System.Threading.Tasks;
+using TaskApi.Data;
 using TaskApi.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace TaskApi.Repositories
 {
     public class TaskRepository : ITaskRepository
     {
-       private readonly List<Tasks> _tasks = new List<Tasks> ();
+       //private readonly List<Tasks> _tasks = new List<Tasks> ();
+        private readonly AppDbContext _dbContext;
 
-        public Tasks CreateTask(Tasks task)
+        public TaskRepository(AppDbContext dbContext)
         {
-             _tasks.Add(task);
+            _dbContext = dbContext;
+        }
+
+        public async Task<Tasks> CreateTask(Tasks task)
+        {
+             _dbContext.Tasks.Add(task);
+            await _dbContext.SaveChangesAsync();  
+
             return task;
+        }
+
+        public async Task<Tasks> GetById(int id)
+        {
+            var tasks=await _dbContext.Tasks.FindAsync(id);
+            return tasks;
         }
 
         public PagedResult<Tasks> GetTasks(TaskFilter param) 
         {
-            IEnumerable<Tasks> tasks = _tasks;
+            IEnumerable<Tasks> tasks = _dbContext.Tasks;
 
             if (!string.IsNullOrEmpty(param.Search))
             {
@@ -61,7 +76,7 @@ namespace TaskApi.Repositories
                 Data = tasks,
                 Page = param.Page,
                 PageSize = param.PageSize,
-                TotalCount = _tasks.Count()
+                TotalCount = _dbContext.Tasks.Count()
             };
         }
     }

@@ -1,4 +1,5 @@
 ﻿
+using System.Threading.Tasks;
 using TaskApi.Models;
 using TaskApi.Repositories;
 
@@ -13,9 +14,14 @@ namespace TaskApi.Services
             _taskRepository = taskRepository;
         }
 
-        public Tasks CreateTask(Tasks task)
+        public async Task<Tasks> CreateTask(Tasks task)
         {
-            return _taskRepository.CreateTask(task);
+            return await _taskRepository.CreateTask(task);
+        }
+
+        public async Task<Tasks> GetById(int id)
+        {
+            return await _taskRepository.GetById(id);
         }
 
         public PagedResult<Tasks> GetTasks(TaskFilter param)
