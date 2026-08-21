@@ -13,7 +13,7 @@ namespace TaskApi.Configurations
             builder.Property(d=>d.Description).IsRequired().HasMaxLength(200);
 
             //relation
-            builder.HasOne(u => u.User).WithMany(t => t.Task).HasForeignKey(t=>t.UserId);
+            builder.HasOne(u => u.User).WithMany(t => t.Tasks).HasForeignKey(t=>t.UserId);
         }
     }
 }

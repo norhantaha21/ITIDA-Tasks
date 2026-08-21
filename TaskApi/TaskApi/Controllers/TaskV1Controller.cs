@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using TaskApi.Dtos;
 using TaskApi.Models;
 using TaskApi.Services;
 
@@ -19,32 +20,42 @@ namespace TaskApi.Controllers.v1
             _taskService = taskService;
         }
 
+        [HttpGet]
+        public ActionResult<PagedResult<TaskDto>> GetTasks([FromQuery] TaskFilter param)
+        {
+            var result = _taskService.GetTasks(param);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TaskDto>> GetById(int id)
+        {
+            var task = await _taskService.GetById(id);
+            if (task == null) return NotFound();
+            return Ok(task);
+        }
+
         [HttpPost]
-        public async Task<ActionResult> CreateTask(Tasks task)
+        public async Task<ActionResult<TaskDto>> CreateTask([FromBody] CreateTaskRequestDto request)
         {
-            return Created($"/api/task/{task.Id}", await _taskService.CreateTask(task));
+            var created = await _taskService.CreateTask(request);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        [HttpGet]
-        public IActionResult GetAllTasks([FromQuery] TaskFilter param)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TaskDto>> UpdateTask(int id, [FromBody] UpdateTaskRequestDto request)
         {
-            return Ok(_taskService.GetTasks(param));
+            var updated = await _taskService.UpdateTask(id, request);
+            if (updated == null) return NotFound();
+            return Ok(updated);
         }
 
-        [HttpGet]
-        [Route("{id}")]
-        public async Task<ActionResult> GetTaskById(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTask(int id)
         {
-            var data =await _taskService.GetById(id);
-            return Ok(new
-            {
-                Id=data.Id,
-                Title=data.Title,
-                Description=data.Description,
-                UserId=data.UserId,
-                Name=data.User.Name
-
-            });
+            var deleted = await _taskService.DeleteTask(id);
+            if (!deleted) return NotFound();
+            return NoContent();
         }
     }
 }

@@ -8,5 +8,7 @@ namespace TaskApi.Repositories
         public PagedResult<Tasks> GetTasks(TaskFilter param);
 
         public Task<Tasks> GetById(int id);
+        public Task<Tasks> UpdateTask(Tasks task);
+        public Task<bool> DeleteTask(int id);
     }
 }

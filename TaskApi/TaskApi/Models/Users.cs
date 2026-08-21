@@ -1,4 +1,6 @@
-﻿namespace TaskApi.Models
+﻿using System.Text.Json.Serialization;
+
+namespace TaskApi.Models
 {
     public class Users
     {
@@ -8,7 +10,8 @@
         public string Password { get; set; }
 
         //Navigation property
-        public ICollection<Tasks> Task { get; set; }=new List<Tasks>();
+        [JsonIgnore]
+        public List<Tasks>? Tasks { get; set; } = new List<Tasks>();
 
     }
 }

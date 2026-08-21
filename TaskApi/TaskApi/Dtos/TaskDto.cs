@@ -1,9 +1,6 @@
-﻿
-using System.Text.Json.Serialization;
-
-namespace TaskApi.Models
+﻿namespace TaskApi.Dtos
 {
-    public class Tasks
+    public class TaskDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -12,13 +9,8 @@ namespace TaskApi.Models
         public DateTime DueDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public string Status = string.Empty;
-
-        //Foreign key
+        public string Status { get; set; }
         public int UserId { get; set; }
-
-        //Navigation property
-        [JsonIgnore]
-        public Users? User { get; set; }
+        public string UserName { get; set; }
     }
 }
