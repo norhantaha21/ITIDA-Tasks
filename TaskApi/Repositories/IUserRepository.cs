@@ -1,0 +1,12 @@
+﻿using TaskApi.Dtos.UserDtos;
+using TaskApi.Models;
+
+namespace TaskApi.Repositories
+{
+    public interface IUserRepository
+    {
+        Task<Users> CreateUser(Users user);
+        Task<List<Users>> GetAllUsers();
+        Task<Users> GetByEmail(string email);
+    }
+}
