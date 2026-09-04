@@ -8,7 +8,11 @@ namespace TaskApi.Mappings
     {
         public MappingProfile() {
             CreateMap<Tasks, TaskDto>()
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Name));
+     .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Name));
+
+            CreateMap<CreateTaskRequestDto, Tasks>();
+
+            CreateMap<UpdateTaskRequestDto, Tasks>();
 
             CreateMap<CreateTaskRequestDto, TaskDto>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));

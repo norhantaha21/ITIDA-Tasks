@@ -2,10 +2,12 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using TaskApi.Authorization;
 using TaskApi.Data;
 using TaskApi.Mappings;
 using TaskApi.Middleware;
@@ -39,7 +41,6 @@ namespace TaskApi
                     Description = "Task Management API v2"
                 });
 
-                // JWT button in Swagger UI
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -70,6 +71,9 @@ namespace TaskApi
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
 
+            // Resource-based authorization handler for task ownership checks
+            builder.Services.AddScoped<IAuthorizationHandler, TaskAuthorizationHandler>();
+
             builder.Services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(2, 0);
@@ -95,6 +99,9 @@ namespace TaskApi
             builder.Services.AddFluentValidationAutoValidation();
 
             // ---- JWT Authentication ----
+            var jwtSecret = builder.Configuration["Jwt:Secret"]
+                ?? throw new InvalidOperationException("Jwt:Secret is missing from configuration. Add it to appsettings.Development.json.");
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -107,11 +114,14 @@ namespace TaskApi
                         ValidIssuer = builder.Configuration["Jwt:Issuer"],
                         ValidAudience = builder.Configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!))
+                            Encoding.UTF8.GetBytes(jwtSecret))
                     };
                 });
 
-            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorization(options =>
+                options.AddPolicy("CanManageTasks", policy =>
+                    policy.RequireAuthenticatedUser()
+                          .RequireRole("User", "Moderator", "Admin")));
 
             var app = builder.Build();
 
@@ -128,7 +138,7 @@ namespace TaskApi
             app.UseMiddleware<GlobalException>();
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();   
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

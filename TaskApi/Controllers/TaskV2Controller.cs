@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskApi.Dtos;
+using TaskApi.helpers;
 using TaskApi.Models;
+using TaskApi.Repositories;
 using TaskApi.Services;
 
 namespace TaskApi.Controllers.v2
@@ -14,11 +16,16 @@ namespace TaskApi.Controllers.v2
     public class TaskV2Controller : ControllerBase
     {
         private readonly ITaskService _taskService;
+        private readonly ITaskRepository _taskRepository;
+        private readonly IAuthorizationService _authz;
 
-        public TaskV2Controller(ITaskService taskService)
+        public TaskV2Controller(ITaskService taskService, ITaskRepository taskRepository, IAuthorizationService authz)
         {
             _taskService = taskService;
+            _taskRepository = taskRepository;
+            _authz = authz;
         }
+
         [HttpGet]
         public ActionResult<PagedResult<TaskDto>> GetTasks([FromQuery] TaskFilter param)
         {
@@ -41,20 +48,34 @@ namespace TaskApi.Controllers.v2
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Route("{id}")]
+        [Authorize(Policy = "CanManageTasks")]
         public async Task<ActionResult<TaskDto>> UpdateTask(int id, [FromBody] UpdateTaskRequestDto request)
         {
+            var existingTask = await _taskRepository.GetById(id);
+            if (existingTask == null) return NotFound();
+
+            var result = await _authz.AuthorizeAsync(User, existingTask, Operations.Update);
+            if (!result.Succeeded) return Forbid();
+
             var updated = await _taskService.UpdateTask(id, request);
-            if (updated == null) return NotFound();
             return Ok(updated);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTask(int id)
+        [HttpDelete]
+        [Route("{id}")]
+        [Authorize(Policy = "CanManageTasks")]
+        public async Task<ActionResult> DeleteTask(int id)
         {
-            var deleted = await _taskService.DeleteTask(id);
-            if (!deleted) return NotFound();
+            var existingTask = await _taskRepository.GetById(id);
+            if (existingTask == null) return NotFound();
+
+            var result = await _authz.AuthorizeAsync(User, existingTask, Operations.Delete);
+            if (!result.Succeeded) return Forbid();
+
+            await _taskService.DeleteTask(id);
             return NoContent();
         }
     }
-    }
+}
