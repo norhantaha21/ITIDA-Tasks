@@ -1,34 +1,29 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { Blog } from "../Types/Blog";
 
-function Home() {
-  const [blogs, setBlog] = useState<Blog[]>([
-    { id: 1, title: "title1", content: "content1", author: "Ahmed" },
-    { id: 2, title: "title2", content: "content2", author: "Mohamed" },
-  ]);
+interface HomeProps {
+  blogs: Blog[];
+  removeBlog: (id: number) => void;
+}
 
-  function addBlog(blog: Blog) {
-    setBlog([...blogs, blog]);
-  }
-
-  function RemoveBlog(index: number) {
-    setBlog(blogs.filter((_, i) => i !== index));
-  }
-
+function Home({ blogs, removeBlog }: HomeProps) {
   return (
     <div>
       <h1>Blogs</h1>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} title={blog.title} content={blog.content} />
-      ))}
 
-      <button
-        onClick={() => {
-          RemoveBlog;
-        }}
-      >
-        Remove Blog
-      </button>
+      {blogs.map((blog) => (
+        <div key={blog.id}>
+          <h2>{blog.title}</h2>
+
+          <p>Author: {blog.author}</p>
+
+          <Link to={`/blog/${blog.id}`}>View Blog</Link>
+
+          <button onClick={() => removeBlog(blog.id)}>Remove</button>
+
+          <hr />
+        </div>
+      ))}
     </div>
   );
 }
