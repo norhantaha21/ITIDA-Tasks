@@ -1,0 +1,128 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+}
+
+nav {
+  background: #222;
+  padding: 20px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.container {
+  padding: 30px;
+}
+
+.container h1 {
+  text-align: center;
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.filters input,
+.filters select {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.movie-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.movie-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.movie-info {
+  padding: 15px;
+}
+
+.movie-info h2 {
+  margin-top: 0;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.details-btn,
+.delete-btn,
+.back-btn {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.details-btn {
+  background: #333;
+  color: white;
+}
+
+.delete-btn {
+  background: #c62828;
+  color: white;
+}
+
+.back-btn {
+  background: #333;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.details-container {
+  padding: 30px;
+}
+
+.details-card {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  display: flex;
+  gap: 30px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.details-card img {
+  width: 300px;
+  height: 450px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.message {
+  text-align: center;
+  margin-top: 50px;
+}
